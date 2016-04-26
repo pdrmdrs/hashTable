@@ -8,6 +8,8 @@
 
 #include "Tabela.h"
 #include <iostream>
+#include <cstring>
+#include <stdlib.h>
 
 long PreHash(Chave);
 short Hash(long, int);
