@@ -17,6 +17,8 @@ void Redimensionar(Tabela, int);
 void Expandir(Tabela);
 void Reduzir(Tabela);
 
+int pegarIndiceDaChave(Tabela, Chave);
+
 /*
     Função que insere um par (chave, item) na tabela.
  
@@ -31,11 +33,107 @@ void Reduzir(Tabela);
     !!! Faça redimensionamento dinâmico caso o fator de carga seja maior do que 0.5. Cheque se é necessário fazer redimensionamento após inserir com sucesso na tabela. !!!
  
  */
-bool TAB_Inserir(Tabela tabela, Chave chave, Item item)
+bool TAB_Inserir(Tabela tabela, Chave chave, Item item, bool checarTamanho)
 {
-    std::cout << "\n\n !!! Função TAB_Inserir ainda não foi implementada. Implemente esta função para poder executar os testes corretamente. !!!\n\n" << std::endl;
+
+    if(!(tabela && chave)) return false;
+
+    int deslocamento = 0;
+
+    do
+    {
+
+        int indice = (Hash(PreHash(chave), tabela->tamanho)+deslocamento) % tabela->tamanho;
+
+        if(tabela->itens[indice] == NULL || tabela->chaves[indice] == CHAVE_REMOVIDA)
+        {
+            tabela->itens[indice] = item;
+            tabela->chaves[indice] = chave;
+            tabela->qtdItens++;
+
+            if(checarTamanho) TAB_ChecarTamanho(tabela, true);
+
+            return true;
+        }else if(tabela->chaves[indice] == chave)
+        {
+            tabela->itens[indice] = item;
+            tabela->chaves[indice] = chave;
+
+            if(checarTamanho) TAB_ChecarTamanho(tabela, true);
+
+            return true;
+        }
+
+        deslocamento++;
+
+    }
+    while(deslocamento < tabela->tamanho);
+
+    return false;
+}
+
+
+bool TAB_ChecarTamanho(Tabela tabela, bool aumentando){
+
+    double alfa = ((double)tabela->qtdItens) / tabela->tamanho;
+
+    if(alfa > 0.5 && aumentando)
+    {
+        //redimensionar a tabela, dobrando o seu tamanho
+        int tamanho = tabela->tamanho;
+        Item * itensAux = tabela->itens;
+        Chave * chavesAux = tabela->chaves;
+
+        tabela->tamanho = tabela->tamanho*2 + 1;
+        tabela->qtdItens = 0;
+        tabela->itens = new Item[tabela->tamanho];
+        tabela->chaves = new Chave[tabela->tamanho];
+        for(int i = 0; i < tabela->tamanho; i++){
+            tabela->chaves[i] = NULL;
+        }
+
+        for(int i = 0; i < tamanho; i++){
+            if(chavesAux[i] != NULL && chavesAux[i] != CHAVE_REMOVIDA){
+                TAB_Inserir(tabela, chavesAux[i], itensAux[i], false);
+            }
+
+        }
+
+        delete[] itensAux;
+        delete[] chavesAux;
+
+        return true;
+    }
+    else if(alfa < 0.25 && !aumentando)
+    {
+        int tamanho = tabela->tamanho;
+        Item * itensAux = tabela->itens;
+        Chave * chavesAux = tabela->chaves;
+
+        tabela->tamanho = tabela->tamanho/2 % 2 ? tabela->tamanho/2 : (tabela->tamanho/2) +1;
+
+        tabela->qtdItens = 0;
+        tabela->itens = new Item[tabela->tamanho];
+        tabela->chaves = new Chave[tabela->tamanho];
+        for(int i = 0; i < tabela->tamanho; i++){
+            tabela->chaves[i] = NULL;
+        }
+
+        for(int i = 0; i < tamanho; i++){
+            if(chavesAux[i] != NULL && chavesAux[i] != CHAVE_REMOVIDA){
+                TAB_Inserir(tabela, chavesAux[i], itensAux[i], false);
+            }
+
+        }
+
+        delete[] itensAux;
+        delete[] chavesAux;
+
+        return true;
+    }
+
+    return false;
     
-    exit(-1);
 }
 
 /*
@@ -52,10 +150,22 @@ bool TAB_Inserir(Tabela tabela, Chave chave, Item item)
  */
 bool TAB_Remover(Tabela tabela, Chave chave)
 {
-    std::cout << "\n\n !!! Função TAB_Remover ainda não foi implementada. Implemente esta função para poder executar os testes corretamente. !!!\n\n" << std::endl;
-    
-    exit(-1);
+
+    int indice = pegarIndiceDaChave(tabela, chave);
+
+    if(indice > -1){
+        tabela->chaves[indice] = CHAVE_REMOVIDA;
+        tabela->qtdItens--;
+
+        TAB_ChecarTamanho(tabela, false);
+
+        return true;
+    }
+
+    return false;
 }
+
+
 
 /*
  Função que busca um item na tabela a partir de uma chave.
@@ -69,10 +179,39 @@ bool TAB_Remover(Tabela tabela, Chave chave)
  */
 Item TAB_Buscar(Tabela tabela, Chave chave)
 {
-    std::cout << "\n\n !!! Função TAB_Buscar ainda não foi implementada. Implemente esta função para poder executar os testes corretamente. !!!\n\n" << std::endl;
-    
-    exit(-1);
+    int indice = pegarIndiceDaChave(tabela, chave);
+
+    return indice > -1 ? tabela->itens[indice] : NULL;
 }
+
+int pegarIndiceDaChave(Tabela tabela, Chave chave){
+
+    if(!(tabela && chave)) return -1;
+
+    int deslocamento = 0;
+
+    do
+    {
+
+        int indice = (Hash(PreHash(chave), tabela->tamanho)+deslocamento) % tabela->tamanho;
+        if(tabela->chaves[indice] == chave)
+        {
+            return indice;
+        }
+        else if(tabela->chaves[indice] == NULL)
+        {
+            return -1;
+        }
+
+        deslocamento++;
+
+    }
+    while(deslocamento < tabela->tamanho);
+
+    return -1;
+
+}
+
 
 void TAB_Imprimir(Tabela tabela)
 {

@@ -39,9 +39,11 @@ void TAB_Imprimir(Tabela);
 
 
 /* INÍCIO: Funções que devem ser implementadas */
-bool TAB_Inserir(Tabela, Chave, Item);
+bool TAB_Inserir(Tabela, Chave, Item, bool checarTamanho = true);
 bool TAB_Remover(Tabela, Chave);
 Item TAB_Buscar(Tabela, Chave);
+
+bool TAB_ChecarTamanho(Tabela, bool aumentando);
 /* FIM: Funções que devem ser implementadas */
 
 /* Constantes para serem usadas na função de remoção */
