@@ -95,6 +95,7 @@ bool TAB_ChecarTamanho(Tabela tabela, bool aumentando){
         tabela->itens = new Item[tabela->tamanho];
         tabela->chaves = new Chave[tabela->tamanho];
         for(int i = 0; i < tabela->tamanho; i++){
+            tabela->itens[i] = NULL;
             tabela->chaves[i] = NULL;
         }
 
@@ -107,6 +108,9 @@ bool TAB_ChecarTamanho(Tabela tabela, bool aumentando){
 
         delete[] itensAux;
         delete[] chavesAux;
+
+        itensAux = 0;
+        chavesAux = 0;
 
         return true;
     }
@@ -118,10 +122,13 @@ bool TAB_ChecarTamanho(Tabela tabela, bool aumentando){
 
         tabela->tamanho = tabela->tamanho/2 % 2 ? tabela->tamanho/2 : (tabela->tamanho/2) +1;
 
+        std::cout << tabela->tamanho << std::endl;
+
         tabela->qtdItens = 0;
         tabela->itens = new Item[tabela->tamanho];
         tabela->chaves = new Chave[tabela->tamanho];
         for(int i = 0; i < tabela->tamanho; i++){
+            tabela->itens[i] = NULL;
             tabela->chaves[i] = NULL;
         }
 
@@ -134,6 +141,9 @@ bool TAB_ChecarTamanho(Tabela tabela, bool aumentando){
 
         delete[] itensAux;
         delete[] chavesAux;
+
+        itensAux = 0;
+        chavesAux = 0;
 
         return true;
     }
@@ -163,7 +173,7 @@ bool TAB_Remover(Tabela tabela, Chave chave)
         tabela->chaves[indice] = CHAVE_REMOVIDA;
         tabela->qtdItens--;
 
-        //TAB_ChecarTamanho(tabela, false);
+        TAB_ChecarTamanho(tabela, false);
 
         return true;
     }
