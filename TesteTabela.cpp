@@ -700,6 +700,9 @@ bool testar_Remover_Sucessivas()
         {
             cout << "\t*ERRO - Teste Remover_Sucessivas: Não removeu corretamente item com chave igual a : " << chave->chave << "." << endl;
             removeu = false;
+
+            //TAB_Imprimir(tabela);
+
             break;
         }
         

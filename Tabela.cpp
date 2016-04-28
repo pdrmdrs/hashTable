@@ -19,6 +19,7 @@ void Reduzir(Tabela);
 
 int pegarIndiceDaChave(Tabela, Chave);
 
+
 /*
     Função que insere um par (chave, item) na tabela.
  
@@ -45,7 +46,7 @@ bool TAB_Inserir(Tabela tabela, Chave chave, Item item, bool checarTamanho)
 
         int indice = (Hash(PreHash(chave), tabela->tamanho)+deslocamento) % tabela->tamanho;
 
-        if(tabela->itens[indice] == NULL || tabela->chaves[indice] == CHAVE_REMOVIDA)
+        if(tabela->itens[indice] == NULL || tabela->chaves[indice] == CHAVE_REMOVIDA)//espaço vazio, pode inserir
         {
             tabela->itens[indice] = item;
             tabela->chaves[indice] = chave;
@@ -54,7 +55,8 @@ bool TAB_Inserir(Tabela tabela, Chave chave, Item item, bool checarTamanho)
             if(checarTamanho) TAB_ChecarTamanho(tabela, true);
 
             return true;
-        }else if(tabela->chaves[indice] == chave)
+        }
+        else if(strcmp(tabela->chaves[indice]->chave, chave->chave) == 0)//chave já existe, portanto, devo atualizar o valor do seu item
         {
             tabela->itens[indice] = item;
             tabela->chaves[indice] = chave;
@@ -73,13 +75,17 @@ bool TAB_Inserir(Tabela tabela, Chave chave, Item item, bool checarTamanho)
 }
 
 
+/*
+
+ Função que checa o fator de carga da tabela, a fim de fazer o seu redimensionamento.
+
+*/
 bool TAB_ChecarTamanho(Tabela tabela, bool aumentando){
 
     double alfa = ((double)tabela->qtdItens) / tabela->tamanho;
 
-    if(alfa > 0.5 && aumentando)
+    if(alfa > 0.5 && aumentando)//redimensionar a tabela, dobrando o seu tamanho
     {
-        //redimensionar a tabela, dobrando o seu tamanho
         int tamanho = tabela->tamanho;
         Item * itensAux = tabela->itens;
         Chave * chavesAux = tabela->chaves;
@@ -104,7 +110,7 @@ bool TAB_ChecarTamanho(Tabela tabela, bool aumentando){
 
         return true;
     }
-    else if(alfa < 0.25 && !aumentando)
+    else if(alfa < 0.25 && !aumentando)//redimensionar a tabela, diminuindo seu tamanho pela metade
     {
         int tamanho = tabela->tamanho;
         Item * itensAux = tabela->itens;
@@ -157,15 +163,13 @@ bool TAB_Remover(Tabela tabela, Chave chave)
         tabela->chaves[indice] = CHAVE_REMOVIDA;
         tabela->qtdItens--;
 
-        TAB_ChecarTamanho(tabela, false);
+        //TAB_ChecarTamanho(tabela, false);
 
         return true;
     }
 
     return false;
 }
-
-
 
 /*
  Função que busca um item na tabela a partir de uma chave.
@@ -184,27 +188,28 @@ Item TAB_Buscar(Tabela tabela, Chave chave)
     return indice > -1 ? tabela->itens[indice] : NULL;
 }
 
+
+/*
+
+ Função que retorna o valor do índice na tabela, dada uma chave qualquer.
+
+*/
 int pegarIndiceDaChave(Tabela tabela, Chave chave){
 
-    if(!(tabela && chave)) return -1;
+    if(!(tabela && chave))  return -1; 
 
     int deslocamento = 0;
 
     do
     {
-
         int indice = (Hash(PreHash(chave), tabela->tamanho)+deslocamento) % tabela->tamanho;
-        if(tabela->chaves[indice] == chave)
+
+        if((tabela->chaves[indice] != CHAVE_REMOVIDA) && (tabela->chaves[indice] != NULL) && (strcmp(tabela->chaves[indice]->chave, chave->chave) == 0))
         {
             return indice;
         }
-        else if(tabela->chaves[indice] == NULL)
-        {
-            return -1;
-        }
 
         deslocamento++;
-
     }
     while(deslocamento < tabela->tamanho);
 
