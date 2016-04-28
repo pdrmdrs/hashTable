@@ -122,8 +122,6 @@ bool TAB_ChecarTamanho(Tabela tabela, bool aumentando){
 
         tabela->tamanho = tabela->tamanho/2 % 2 ? tabela->tamanho/2 : (tabela->tamanho/2) +1;
 
-        std::cout << tabela->tamanho << std::endl;
-
         tabela->qtdItens = 0;
         tabela->itens = new Item[tabela->tamanho];
         tabela->chaves = new Chave[tabela->tamanho];
