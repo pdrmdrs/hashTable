@@ -48,7 +48,8 @@ bool TAB_Inserir(Tabela tabela, Chave chave, Item item, bool checarTamanho)
         
         if(tabela->sondagem == quadratica) indice = (Hash(PreHash(chave), tabela->tamanho)+deslocamento + (deslocamento*deslocamento)) % tabela->tamanho;//sondagem quadrática
         
-        if(tabela->sondagem == doubleHashing){//doubleHashing
+        if(tabela->sondagem == doubleHashing)//doubleHashing
+        {
 
             int hash1 =  (Hash(PreHash(chave), tabela->tamanho));
 
@@ -56,11 +57,11 @@ bool TAB_Inserir(Tabela tabela, Chave chave, Item item, bool checarTamanho)
 
             if(deslocamento != 0)
             {
-                hash2 = (Hash(PreHash(chave), tabela->tamanho)) * deslocamento; 
+                hash2 = (31+(Hash(PreHash(chave), tabela->tamanho)) * deslocamento) % tabela->tamanho; 
             }
             else
             {
-                hash2 = (Hash(PreHash(chave), tabela->tamanho));
+                hash2 = (31+(Hash(PreHash(chave), tabela->tamanho))) % tabela->tamanho;
             }
 
             indice =  (hash1 + hash2) % tabela->tamanho;
@@ -238,7 +239,8 @@ int pegarIndiceDaChave(Tabela tabela, Chave chave){
         
         if(tabela->sondagem == quadratica) indice = (Hash(PreHash(chave), tabela->tamanho)+deslocamento + (deslocamento*deslocamento)) % tabela->tamanho;//sondagem quadrática
         
-        if(tabela->sondagem == doubleHashing){//doubleHashing
+        if(tabela->sondagem == doubleHashing)//doubleHashing
+        {
 
             int hash1 =  (Hash(PreHash(chave), tabela->tamanho));
 
@@ -246,14 +248,15 @@ int pegarIndiceDaChave(Tabela tabela, Chave chave){
 
             if(deslocamento != 0)
             {
-                    hash2 = (Hash(PreHash(chave), tabela->tamanho)) * deslocamento; 
+                hash2 = (31+(Hash(PreHash(chave), tabela->tamanho)) * deslocamento) % tabela->tamanho; 
             }
             else
             {
-                    hash2 = (Hash(PreHash(chave), tabela->tamanho));
+                hash2 = (31+(Hash(PreHash(chave), tabela->tamanho))) % tabela->tamanho;
             }
 
-            indice =  (hash1 + hash2) % tabela->tamanho; 
+            indice =  (hash1 + hash2) % tabela->tamanho;
+            
         } 
 
         if((tabela->chaves[indice] != CHAVE_REMOVIDA) && (tabela->chaves[indice] != NULL) && (strcmp(tabela->chaves[indice]->chave, chave->chave) == 0))

@@ -35,7 +35,7 @@ typedef struct tpTabela
 } * Tabela;
 
 /* INÍCIO: Funções já implementadas */
-Tabela TAB_CriarTabela(int, tpSondagem sondagem = quadratica);
+Tabela TAB_CriarTabela(int, tpSondagem sondagem = linear);
 void TAB_DestruirTabela(Tabela);
 Chave TAB_CriarChave(const char*);
 Item TAB_CriarItem(const char*);
