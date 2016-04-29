@@ -19,7 +19,6 @@ void Reduzir(Tabela);
 
 int pegarIndiceDaChave(Tabela, Chave);
 
-
 /*
     Função que insere um par (chave, item) na tabela.
  
@@ -41,11 +40,33 @@ bool TAB_Inserir(Tabela tabela, Chave chave, Item item, bool checarTamanho)
 
     int deslocamento = 0;
 
+    int indice = 0;
+
     do
     {
+        if(tabela->sondagem == linear) indice = (Hash(PreHash(chave), tabela->tamanho)+deslocamento) % tabela->tamanho;//sondagem linear
+        
+        if(tabela->sondagem == quadratica) indice = (Hash(PreHash(chave), tabela->tamanho)+deslocamento + (deslocamento*deslocamento)) % tabela->tamanho;//sondagem quadrática
+        
+        if(tabela->sondagem == doubleHashing){//doubleHashing
 
-        int indice = (Hash(PreHash(chave), tabela->tamanho)+deslocamento) % tabela->tamanho;
+            int hash1 =  (Hash(PreHash(chave), tabela->tamanho));
 
+            int hash2 = 0;
+
+            if(deslocamento != 0)
+            {
+                hash2 = (Hash(PreHash(chave), tabela->tamanho)) * deslocamento; 
+            }
+            else
+            {
+                hash2 = (Hash(PreHash(chave), tabela->tamanho));
+            }
+
+            indice =  (hash1 + hash2) % tabela->tamanho;
+            
+        }
+        
         if(tabela->itens[indice] == NULL || tabela->chaves[indice] == CHAVE_REMOVIDA)//espaço vazio, pode inserir
         {
             tabela->itens[indice] = item;
@@ -210,7 +231,30 @@ int pegarIndiceDaChave(Tabela tabela, Chave chave){
 
     do
     {
-        int indice = (Hash(PreHash(chave), tabela->tamanho)+deslocamento) % tabela->tamanho;
+
+        int indice = 0;
+
+        if(tabela->sondagem == linear) indice = (Hash(PreHash(chave), tabela->tamanho)+deslocamento) % tabela->tamanho;//sondagem linear
+        
+        if(tabela->sondagem == quadratica) indice = (Hash(PreHash(chave), tabela->tamanho)+deslocamento + (deslocamento*deslocamento)) % tabela->tamanho;//sondagem quadrática
+        
+        if(tabela->sondagem == doubleHashing){//doubleHashing
+
+            int hash1 =  (Hash(PreHash(chave), tabela->tamanho));
+
+            int hash2 = 0;
+
+            if(deslocamento != 0)
+            {
+                    hash2 = (Hash(PreHash(chave), tabela->tamanho)) * deslocamento; 
+            }
+            else
+            {
+                    hash2 = (Hash(PreHash(chave), tabela->tamanho));
+            }
+
+            indice =  (hash1 + hash2) % tabela->tamanho; 
+        } 
 
         if((tabela->chaves[indice] != CHAVE_REMOVIDA) && (tabela->chaves[indice] != NULL) && (strcmp(tabela->chaves[indice]->chave, chave->chave) == 0))
         {
@@ -251,6 +295,7 @@ void TAB_Imprimir(Tabela tabela)
 short Hash(long valor, int n)
 {
     int indice = (valor & 0x7FFFFFFF) % n;
+
     return indice;
 }
 
@@ -272,7 +317,7 @@ long PreHash(Chave chave)
     return hash;
 }
 
-Tabela TAB_CriarTabela(int tamanhoInicial)
+Tabela TAB_CriarTabela(int tamanhoInicial, tpSondagem sondagem)
 {
     if( tamanhoInicial <= 0 )
     {
@@ -283,6 +328,8 @@ Tabela TAB_CriarTabela(int tamanhoInicial)
     
     tabela->tamanho = tamanhoInicial;
     tabela->qtdItens = 0;
+
+    tabela->sondagem = sondagem;
     
     tabela->itens = new Item[tamanhoInicial];
     tabela->chaves = new Chave[tamanhoInicial];

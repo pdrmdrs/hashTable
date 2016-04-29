@@ -19,16 +19,23 @@ typedef struct tpChave
     char *chave;
 } * Chave;
 
+typedef enum {
+	linear,
+    quadratica,
+	doubleHashing
+} tpSondagem ; 
+
 typedef struct tpTabela
 {
     Item * itens;
     Chave* chaves;
     int tamanho;
     int qtdItens;
+    tpSondagem sondagem;
 } * Tabela;
 
 /* INÍCIO: Funções já implementadas */
-Tabela TAB_CriarTabela(int);
+Tabela TAB_CriarTabela(int, tpSondagem sondagem = quadratica);
 void TAB_DestruirTabela(Tabela);
 Chave TAB_CriarChave(const char*);
 Item TAB_CriarItem(const char*);
